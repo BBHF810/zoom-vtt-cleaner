@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, FileText, Clipboard, Sparkles, X, Plus } from 'lucide-react';
+import { Upload, FileText, X } from 'lucide-react';
 
 export interface UploadedFileItem {
   id: string;
@@ -21,43 +21,27 @@ const SAMPLE_VTT = `WEBVTT
 
 1
 00:00:01.000 --> 00:00:03.500
-佐藤 准教授: それでは今週の研究進捗ミーティングを始めましょう。
+佐藤: それでは本日の定例ミーティングを始めます。
 
 2
 00:00:03.800 --> 00:00:06.200
-佐藤 准教授: 田中さん、先週のモデル学習の結果はどうでしたか？
+佐藤: 田中さん、先週の進捗はいかがでしょうか？
 
 3
 00:00:07.100 --> 00:00:10.000
-田中 太郎: はい、えーっと、先週提案いただいたデータ拡張を適用して学習を行いました。
+田中: はい。提案いただいた方針で検証を進めました。
 
 4
 00:00:10.300 --> 00:00:14.200
-田中 太郎: その結果、検証セットでの精度が従来手法より2.5ポイント向上しました。
+田中: その結果、精度が従来より向上することを確認できました。
 
 5
-00:00:14.500 --> 00:00:17.000
-田中 太郎: 特にクラス不均衡のあったカテゴリでのF値が改善しています。
+00:00:15.000 --> 00:00:18.000
+佐藤: 良い結果ですね。次回までに詳細なデータをまとめておいてください。
 
 6
-00:00:18.000 --> 00:00:20.500
-佐藤 准教授: お、それはいい結果ですね！混同行列の傾向はどうなっていますか？
-
-7
-00:00:21.200 --> 00:00:24.000
-田中 太郎: 混同行列を確認したところ、まだカテゴリCとDの誤分類が残っています。
-
-8
-00:00:24.500 --> 00:00:28.000
-田中 太郎: 次回までに特徴量の可視化を行い、原因を分析してきます。
-
-9
-00:00:28.500 --> 00:00:31.000
-佐藤 准教授: 了解です。来週月曜の学会予稿の締め切りも近いので、図表も早めに準備してください。
-
-10
-00:00:31.500 --> 00:00:33.200
-田中 太郎: 承知しました。金曜日までにドラフトを共有します。`;
+00:00:18.500 --> 00:00:20.000
+田中: 了解しました。準備しておきます。`;
 
 export const FileUploader: React.FC<FileUploaderProps> = ({
   files,
@@ -84,7 +68,6 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i];
-      // .vtt だけでなく誤って .txt で保存されたものも許容
       const text = await file.text();
       newItems.push({
         id: `${file.name}-${Date.now()}-${i}`,
@@ -109,7 +92,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   const handleFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       await processFiles(e.target.files);
-      e.target.value = ''; // リセット
+      e.target.value = '';
     }
   };
 
@@ -121,7 +104,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     onFilesChange([
       {
         id: `sample-${Date.now()}`,
-        name: '研究進捗ゼミ_20261013.vtt',
+        name: 'sample_meeting.vtt',
         rawText: SAMPLE_VTT,
         size: SAMPLE_VTT.length,
       },
@@ -130,47 +113,44 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
-      {/* タブ切り替え & サンプルボタン */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-        <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-medium">
+    <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
+      {/* タブ切り替え */}
+      <div className="flex items-center justify-between">
+        <div className="flex bg-slate-100 p-0.5 rounded-lg text-xs font-medium">
           <button
             type="button"
             onClick={() => onTabChange('file')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition ${
+            className={`px-3 py-1 rounded-md transition ${
               activeInputTab === 'file'
-                ? 'bg-white text-indigo-600 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-900'
             }`}
           >
-            <UploadCloud className="w-3.5 h-3.5" />
-            ファイル入力 ({files.length})
+            ファイル選択 {files.length > 0 && `(${files.length})`}
           </button>
           <button
             type="button"
             onClick={() => onTabChange('direct')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition ${
+            className={`px-3 py-1 rounded-md transition ${
               activeInputTab === 'direct'
-                ? 'bg-white text-indigo-600 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-900'
             }`}
           >
-            <Clipboard className="w-3.5 h-3.5" />
-            テキスト直貼り
+            直接入力
           </button>
         </div>
 
         <button
           type="button"
           onClick={handleLoadSample}
-          className="inline-flex items-center gap-1.5 text-xs text-indigo-600 hover:text-indigo-700 bg-indigo-50/60 hover:bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-200/50 transition font-medium"
+          className="text-xs text-slate-500 hover:text-slate-800 transition"
         >
-          <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-          研究室MTGのサンプルを試す
+          サンプルを試す
         </button>
       </div>
 
-      {/* ファイル入力タブ */}
+      {/* ファイル入力 */}
       {activeInputTab === 'file' && (
         <div className="space-y-3">
           <div
@@ -178,10 +158,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 ${
+            className={`border border-dashed rounded-xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 ${
               isDragging
-                ? 'border-indigo-500 bg-indigo-50/40'
-                : 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50/50'
+                ? 'border-slate-800 bg-slate-50'
+                : 'border-slate-300 hover:border-slate-400 hover:bg-slate-50/50'
             }`}
           >
             <input
@@ -192,78 +172,49 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
               onChange={handleFileInputChange}
               className="hidden"
             />
-            <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
-              <UploadCloud className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-slate-700">
-                ここに .vtt ファイルをドラッグ＆ドロップ
-              </p>
-              <p className="text-xs text-slate-400 mt-1">
-                またはクリックしてファイルを選択（複数ファイルの一括変換にも対応）
-              </p>
-            </div>
+            <Upload className="w-5 h-5 text-slate-400" />
+            <p className="text-xs font-medium text-slate-700">
+              .vtt ファイルをドラッグ＆ドロップ、またはクリックして選択
+            </p>
           </div>
 
-          {/* 選択済みファイル一覧 */}
+          {/* 選択ファイルリスト */}
           {files.length > 0 && (
-            <div className="space-y-1.5 pt-2">
-              <div className="flex items-center justify-between text-xs text-slate-500 font-medium px-1">
-                <span>読み込み中のファイル ({files.length}件)</span>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="text-indigo-600 hover:underline flex items-center gap-1"
+            <div className="max-h-36 overflow-y-auto space-y-1">
+              {files.map((file) => (
+                <div
+                  key={file.id}
+                  className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-150 text-xs text-slate-700"
                 >
-                  <Plus className="w-3 h-3" /> ファイルを追加
-                </button>
-              </div>
-              <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
-                {files.map((file) => (
-                  <div
-                    key={file.id}
-                    className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 bg-slate-50/60 text-xs text-slate-700"
-                  >
-                    <div className="flex items-center gap-2 overflow-hidden">
-                      <FileText className="w-4 h-4 text-indigo-500 shrink-0" />
-                      <span className="font-medium truncate">{file.name}</span>
-                      <span className="text-[10px] text-slate-400 shrink-0">
-                        ({Math.round(file.size / 1024)} KB)
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeFile(file.id);
-                      }}
-                      className="p-1 text-slate-400 hover:text-rose-600 rounded-md transition"
-                      title="削除"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
+                  <div className="flex items-center gap-2 truncate">
+                    <FileText className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span className="truncate">{file.name}</span>
                   </div>
-                ))}
-              </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFile(file.id);
+                    }}
+                    className="p-1 text-slate-400 hover:text-slate-700 rounded transition"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
             </div>
           )}
         </div>
       )}
 
-      {/* テキスト直接貼り付けタブ */}
+      {/* 直接入力 */}
       {activeInputTab === 'direct' && (
-        <div className="space-y-2">
-          <textarea
-            value={directText}
-            onChange={(e) => onDirectTextChange(e.target.value)}
-            placeholder="ここにZoom録画の文字起こし(.vtt)の内容をそのまま貼り付けてください..."
-            className="w-full h-44 p-3.5 rounded-xl border border-slate-200 text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none"
-          />
-          <div className="flex justify-between items-center text-[11px] text-slate-400">
-            <span>クリップボードのVTTテキストを貼り付けるとリアルタイムで整形されます</span>
-            <span>{directText.length.toLocaleString()} 文字</span>
-          </div>
-        </div>
+        <textarea
+          value={directText}
+          onChange={(e) => onDirectTextChange(e.target.value)}
+          placeholder="vttのテキストをここに貼り付けてください..."
+          className="w-full h-36 p-3 rounded-lg border border-slate-200 text-xs font-mono text-slate-800 focus:outline-none focus:border-slate-400 resize-none"
+        />
       )}
     </div>
   );
