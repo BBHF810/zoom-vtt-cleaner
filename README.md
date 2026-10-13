@@ -11,6 +11,7 @@
 - **不要情報の削除**: WEBVTTヘッダー、キュー番号、不要なメタデータの除去
 - **発言の自動結合**: 連続する同一話者の細切れ発言を1つの段落にまとめます
 - **オプション切り替え**: タイムスタンプ（なし / 簡易 / 詳細）、話者名の有無、行間設定
+- **英語翻訳出力**: ワンクリックで整形テキストを英語に自動翻訳（コピー / `_en.txt` 保存）
 - **入出力**: ドラッグ＆ドロップ、直接入力、ワンクリックコピー、.txtファイル保存（複数ファイルの一括変換・ZIP保存にも対応）
 
 ---
@@ -32,7 +33,7 @@ npm run build
 1. GitHubにリポジトリを作成してプッシュ:
    ```bash
    git add .
-   git commit -m "Update minimal UI"
+   git commit -m "Add English translation feature"
    git push -u origin main
    ```
 2. [Vercel](https://vercel.com/) にログインし、「Add New...」→「Project」からリポジトリをインポートしてデプロイします。
